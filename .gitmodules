@@ -1,6 +1,3 @@
-[submodule "backend"]
-	path = backend
-	url = https://github.com/Kapilrohilla/clouddrive-backend.git
 [submodule "frontend"]
 	path = frontend
 	url = https://github.com/Kapilrohilla/clouddrive-frontend.git

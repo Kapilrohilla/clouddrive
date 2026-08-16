@@ -83,8 +83,6 @@ resource "aws_internet_gateway" "cloud-drive-igw" {
 	}
 }
 
-
-
 resource "aws_route_table" "cloudDrive_route_table" {
 	vpc_id = aws_vpc.cloudDrive_vpc.id
 
@@ -128,6 +126,37 @@ resource "aws_security_group" "cloudDrive_alb_sg" {
 		to_port = 0
 		protocol = "-1"
 		cidr_blocks = ["0.0.0.0/0"]
+	}
+}
+
+
+resource "aws_lb" "cloudDrive_alb" {
+	name = "cloudDrive-alb"
+	internal = false
+	load_balancer_type = "application"
+	security_groups = [aws_security_group.cloudDrive_alb_sg.id]
+	subnets = [aws_subnet.cloudDrive_subnet_pub1.id, aws_subnet.cloudDrive_subnet_pub2.id]
+}
+
+resource "aws_lb_target_group" "cloudDrive_alb_target_group" {
+	name = "cloudDrive-alb-target-group"
+	port = 80
+	protocol = "HTTP"
+	vpc_id = aws_vpc.cloudDrive_vpc.id
+
+	health_check {
+	  path = "/health"
+	  protocol = "HTTP" 
+	  interval = 30
+	  timeout = 10
+	  healthy_threshold = 2
+	  unhealthy_threshold = 2
+	}
+
+	tags = {
+		CreatedBy = "Terraform"
+		Environment = "Development"
+		Project = "CloudDrive"
 	}
 }
 
